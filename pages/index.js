@@ -162,7 +162,7 @@ useEffect(() => {
     <div>
         <Head>
             <title>Crypto Dev</title>
-            <meta name='description' content='Is Nft whitelist DApp for developers currently running Goerli testnet' />
+            <meta name='description' content='Is Nft whitelist DApp for developers currently running on Goerli testnet' />
         </Head>
       { showErrorAccount && <Alert variant='filled' severity='error' sx={{
           display: 'flex',
