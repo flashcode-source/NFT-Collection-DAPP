@@ -11,7 +11,7 @@ import Web3Modal from 'web3modal';
 import {Contract, providers} from 'ethers';
 import { CONTRACT_ADDRESS, ABI } from '../constants';
 
-const home = () => {
+const Home = () => {
 
 const [walletConnected, setWalletConnected] = useState(false);
 const [joinedWhitelist, setJoinedWhitelist] = useState(false);
@@ -215,4 +215,4 @@ useEffect(() => {
   )
 }
 
-export default home
+export default Home
