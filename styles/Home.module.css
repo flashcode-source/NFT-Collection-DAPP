@@ -3,7 +3,7 @@
   }
   
   .main {
-    min-height: 86vh;
+    min-height: 100vh;
     padding: 4rem 0;
     flex: 1;
     display: flex;
@@ -13,7 +13,7 @@
   }
 
   .muiContainer {
-    min-height: 86vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
