@@ -228,7 +228,13 @@ useEffect(() => {
                 </Grid>
                 <Grid item sm={12} xs={12} md={6} lg={6}>
                     <Box sx={{
-                        display: 'flex',
+                        display: {
+                            md: 'flex',
+                            lg: 'flex',
+                            xl: 'flex',
+                            sm: 'none',
+                            xs: 'none'
+                        },
                         flexDirection: 'column',
                         justifyContent: 'center',
                         alignItems: 'center',
