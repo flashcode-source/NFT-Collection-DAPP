@@ -199,7 +199,7 @@ useEffect(() => {
         </Alert>}
         <Container className={styles.muiContainer} >
             <Grid container sx={{
-                marginTop: process.env.NODE_ENV == "production" ? 10: 0 
+                marginTop: process.env.NODE_ENV == "production" ? 6: 0 
             }}>
                 <Grid item sm={12} xs={12} md={6} lg={6}>
                     <Box sx={{
