@@ -198,7 +198,9 @@ useEffect(() => {
             <b>Error!!</b> Change to Goerli Network
         </Alert>}
         <Container className={styles.muiContainer} >
-            <Grid container>
+            <Grid container sx={{
+                marginTop: process.env.NODE_ENV == "production" ? 10: 0 
+            }}>
                 <Grid item sm={12} xs={12} md={6} lg={6}>
                     <Box sx={{
                         height: '100%',
