@@ -1,5 +1,6 @@
 <h2>NFT whitelist DApp</h2>
 <h3>Frameworks</h3>
+
 1. ReactJs
 2. NextJs
 3. MUI
