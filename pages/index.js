@@ -1,26 +1,43 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
-import styles from '../styles/Test.module.css';
+import styles from '../styles/Home.module.css';
 import Grid from '@mui/material/Grid'
 import Container from '@mui/material/Container'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
-import Web3Modal from 'web3modal';
+import Web3Modal from "web3modal";
 import {Contract, providers} from 'ethers';
 import { CONTRACT_ADDRESS, ABI } from '../constants';
+import { useWindowSize, useWindowHeight, useWindowWidth } from '@react-hook/window-size'
+import SnackBar from '../components/SnackBar'
+import ConfettiDrop from '../components/ConfettiDrop';
+import BackDropLoading from '../components/BackDropLoading';
 
-const home = () => {
+const Home = () => {
 
 const [walletConnected, setWalletConnected] = useState(false);
 const [joinedWhitelist, setJoinedWhitelist] = useState(false);
 const [numberJoined, setNummberjoined] = useState(0);
 const [loading, setLoading] = useState(false);
 const [showErrorAccount, setShowErrorAccount] = useState(false);
+const [width, height] = useWindowSize();
+const [winWidth, setWd] = useState(width);
+const [winHeight, setHt] = useState(height);
 const web3ModalRef = useRef();
+const [openBackDrop, setOpenBackDrop] = useState(false)
+
 
 const getProviderOrSigner = async(needSigner=false) => {
+    try {
+        if(web3ModalRef.current.userOptions.length) {
+            setOpenBackDrop(true);
+        }
+        else {
+            console.log("install metamask");
+            throw new Error("Error install metamask wallet")
+        }
         const provider = await web3ModalRef.current.connect();
         const web3Provider = new providers.Web3Provider(provider);
         const {chainId} = await web3Provider.getNetwork();
@@ -34,6 +51,10 @@ const getProviderOrSigner = async(needSigner=false) => {
             return signer;
         }
         return web3Provider;
+    } catch (err) {
+            console.log(err)
+            setOpenBackDrop(false)
+        }
     
 }
 
@@ -47,8 +68,9 @@ const getNumberOfWhitelisted = async() => {
         );
         const numberOfWL = await nftWhitelistContract.numAddressesWhitelisted();
         setNummberjoined(numberOfWL);
+        setOpenBackDrop(false);
     } catch (err) {
-        console.error(err);
+        console.log(err);
     }
 }
 
@@ -66,7 +88,7 @@ const checkAddressWhitelisted = async() => {
         );
         setJoinedWhitelist(checkWhitelist);
     } catch (err) {
-        console.error(err);
+        console.log(err);
     }
 
 }
@@ -87,7 +109,7 @@ const addToWhitelist = async() => {
        setJoinedWhitelist(true);
        setLoading(false);
     } catch (err) {
-        console.error(err)
+        console.log(err)
     }
 }
 
@@ -148,6 +170,7 @@ const renderButton = () => {
 }
 
 useEffect(() => {
+    
     if(!walletConnected) {
         web3ModalRef.current = new Web3Modal({
             network: 'goerli',
@@ -155,14 +178,18 @@ useEffect(() => {
             disableInjectedProvider: false
         });
         connectWallet();
+        
     }
 }, [walletConnected])
 
   return (
     <div>
+        <SnackBar />
+        <BackDropLoading open={openBackDrop} />
+        {joinedWhitelist && <ConfettiDrop width={winWidth} height={winHeight}/>}
         <Head>
             <title>Crypto Dev</title>
-            <meta name='description' content='if looking for my test page you are the right place.....' />
+            <meta name='description' content='Crypto Devs Nft whitelist page' />
         </Head>
       { showErrorAccount && <Alert variant='filled' severity='error' sx={{
           display: 'flex',
@@ -215,4 +242,4 @@ useEffect(() => {
   )
 }
 
-export default home
+export default Home
