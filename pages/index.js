@@ -200,7 +200,7 @@ useEffect(() => {
         <Container className={styles.muiContainer} >
             <Grid container sx={{
                 position: 'relative',
-                top: process.env.NODE_ENV == "production" ? 10: 0 
+                top: process.env.NODE_ENV == "production" ? 20: 0 
             }}>
                 <Grid item sm={12} xs={12} md={6} lg={6}>
                     <Box sx={{
