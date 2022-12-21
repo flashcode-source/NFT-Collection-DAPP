@@ -14,6 +14,7 @@ import { useWindowSize, useWindowHeight, useWindowWidth } from '@react-hook/wind
 import SnackBar from '../components/SnackBar'
 import ConfettiDrop from '../components/ConfettiDrop';
 import BackDropLoading from '../components/BackDropLoading';
+import CustomModal from '../components/CustomModal';
 
 const Home = () => {
 
@@ -27,7 +28,7 @@ const [winWidth, setWd] = useState(width);
 const [winHeight, setHt] = useState(height);
 const web3ModalRef = useRef();
 const [openBackDrop, setOpenBackDrop] = useState(false)
-
+const [needMetamsk, setNeedMetamsk] = useState(false)
 
 const getProviderOrSigner = async(needSigner=false) => {
     try {
@@ -35,6 +36,7 @@ const getProviderOrSigner = async(needSigner=false) => {
             setOpenBackDrop(true);
         }
         else {
+            setNeedMetamsk(true);
             console.log("install metamask");
             throw new Error("Error install metamask wallet")
         }
@@ -185,6 +187,7 @@ useEffect(() => {
   return (
     <div>
         <SnackBar />
+        {needMetamsk && <CustomModal />}
         <BackDropLoading open={openBackDrop} />
         {joinedWhitelist && <ConfettiDrop width={winWidth} height={winHeight}/>}
         <Head>
