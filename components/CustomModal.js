@@ -40,7 +40,7 @@ export default function CustomModal() {
                 <li>Install metamask</li>
                 <li>Switch network to goerli testnet</li>
                 <li>Make sure you have goerli ETH</li>
-                <li>You can get goerli ETH <Link href="https://goerlifaucet.com">here</Link></li>
+                <li>You can get goerli ETH <Link href="https://goerlifaucet.com">https://goerlifaucet.com</Link></li>
               </ul>
             </Box>
             <Box sx={centerStyle}>
