@@ -38,14 +38,12 @@ const [isMintedOpen, setIsMintedOpen] = useState(true)
 
 const getProviderOrSigner = async(needSigner=false) => {
     try {
-        if(web3ModalRef.current.userOptions.length) {
-            setOpenBackDrop(false);
-        }
-        else {
+        if(!web3ModalRef.current.userOptions.length) {
             setNeedMetamsk(true);
             console.log("install metamask");
             throw new Error("Error install metamask wallet")
         }
+       
         const provider = await web3ModalRef.current.connect();
         const web3Provider = new providers.Web3Provider(provider);
         const {chainId} = await web3Provider.getNetwork();
