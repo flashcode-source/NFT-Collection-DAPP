@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Image from 'next/image';
 
 
 const style = {
@@ -32,8 +33,8 @@ export default function CustomModal() {
     <div>
       <Modal open={true} disableEnforceFocus disableAutoFocus>
         <Box sx={style}>
-            <Box sx={centerStyle}>
-              <img src='mtmsk.png' />
+            <Box sx={centerStyle}>              
+              <Image src='/mtmsk.png' />
             </Box>
             <Box sx={centerStyle}>
               <ul>

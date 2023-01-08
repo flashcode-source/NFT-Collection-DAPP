@@ -15,6 +15,7 @@ import SnackBar from '../components/SnackBar'
 import ConfettiDrop from '../components/ConfettiDrop';
 import BackDropLoading from '../components/BackDropLoading';
 import CustomModal from '../components/CustomModal';
+import Image from 'next/image';
 
 
 
@@ -375,7 +376,7 @@ useEffect(() => {
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}>
-                        <img src='./crypto-devs.svg' width={350} height={350} />
+                        <Image src="/crypto-devs.svg"  width={350} height={350} alt="developer vector svg" />
                     </Box>
                 </Grid>
             </Grid>
