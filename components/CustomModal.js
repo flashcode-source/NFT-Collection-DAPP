@@ -34,7 +34,7 @@ export default function CustomModal() {
       <Modal open={true} disableEnforceFocus disableAutoFocus>
         <Box sx={style}>
             <Box sx={centerStyle}>              
-              <Image src='/mtmsk.png' />
+              <Image src='/mtmsk.png' alt="metamask logo" />
             </Box>
             <Box sx={centerStyle}>
               <ul>
