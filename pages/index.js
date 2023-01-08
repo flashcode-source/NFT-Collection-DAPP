@@ -352,7 +352,7 @@ useEffect(() => {
                             Welcome to Crypto Devs!
                         </h3>
                         <p className={styles.description}>
-                            It's an NFT collection for developers in crypto.
+                            It is an NFT collection for developers in crypto.
                         </p>
                         <p className={styles.description}>
                            {numberMinted}/20 NFT had already been minted
