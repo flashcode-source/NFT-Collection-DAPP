@@ -8,19 +8,20 @@ import Button from '@mui/material/Button'
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import Web3Modal from "web3modal";
-import {Contract, providers} from 'ethers';
+import {Contract, ethers, providers} from 'ethers';
 import { CONTRACT_ADDRESS, ABI } from '../constants';
-import { useWindowSize, useWindowHeight, useWindowWidth } from '@react-hook/window-size'
+import { useWindowSize } from '@react-hook/window-size'
 import SnackBar from '../components/SnackBar'
 import ConfettiDrop from '../components/ConfettiDrop';
 import BackDropLoading from '../components/BackDropLoading';
 import CustomModal from '../components/CustomModal';
 
+
+
 const Home = () => {
 
 const [walletConnected, setWalletConnected] = useState(false);
-const [joinedWhitelist, setJoinedWhitelist] = useState(false);
-const [numberJoined, setNummberjoined] = useState(0);
+const [numberMinted, setNummberMinted] = useState(0);
 const [loading, setLoading] = useState(false);
 const [showErrorAccount, setShowErrorAccount] = useState(false);
 const [width, height] = useWindowSize();
@@ -29,11 +30,16 @@ const [winHeight, setHt] = useState(height);
 const web3ModalRef = useRef();
 const [openBackDrop, setOpenBackDrop] = useState(false)
 const [needMetamsk, setNeedMetamsk] = useState(false)
+const [presaleStarted, setPresaleStarted] = useState(false)
+const [isOwner, setIsOwner] = useState(false)
+const [isPresaleEnded, setIsPresaleEnded] = useState(false)
+const [isMintedOpen, setIsMintedOpen] = useState(true)
+
 
 const getProviderOrSigner = async(needSigner=false) => {
     try {
         if(web3ModalRef.current.userOptions.length) {
-            setOpenBackDrop(true);
+            setOpenBackDrop(false);
         }
         else {
             setNeedMetamsk(true);
@@ -60,115 +66,240 @@ const getProviderOrSigner = async(needSigner=false) => {
     
 }
 
-const getNumberOfWhitelisted = async() => {
-    try {
-        const provider = await getProviderOrSigner();
-        const nftWhitelistContract = new Contract(
-            CONTRACT_ADDRESS,
-            ABI,
-            provider
-        );
-        const numberOfWL = await nftWhitelistContract.numAddressesWhitelisted();
-        setNummberjoined(numberOfWL);
-        setOpenBackDrop(false);
-    } catch (err) {
-        console.log(err);
-    }
-}
-
-const checkAddressWhitelisted = async() => {
-    try {
-        const signer = await getProviderOrSigner(true);
-        const address = await signer.getAddress();
-        const nftWhitelistContract = new Contract(
-            CONTRACT_ADDRESS,
-            ABI,
-            signer
-        );
-        const checkWhitelist = await nftWhitelistContract.whitelistedAddresses(
-            address
-        );
-        setJoinedWhitelist(checkWhitelist);
-    } catch (err) {
-        console.log(err);
-    }
-
-}
-
-const addToWhitelist = async() => {
-    try {
-        const signer = await getProviderOrSigner(true);
-        const address = await signer.getAddress();
-        const nftWhitelistContract = new Contract(
-            CONTRACT_ADDRESS,
-            ABI,
-            signer
-        );
-       const tx = await nftWhitelistContract.addAddressToWhitelist(address);
-       setLoading(true);
-       await tx.wait();
-       await getNumberOfWhitelisted();
-       setJoinedWhitelist(true);
-       setLoading(false);
-    } catch (err) {
-        console.log(err)
-    }
-}
 
 const connectWallet = async() => {
     try {
         await getProviderOrSigner();
-        getNumberOfWhitelisted();
-        checkAddressWhitelisted();
         setWalletConnected(true);
     } catch (err) {
         console.error(err);
     }
 }
 
+const checkContractOwnership = async() => {
+    try {
+        const signer = await getProviderOrSigner(true)
+        const userAddress = await signer.getAddress();
+        const cryptoDevCon = new Contract(
+            CONTRACT_ADDRESS,
+            ABI,
+            signer
+        );
+        const owner = await cryptoDevCon.owner()
+        
+        if (owner == userAddress) {
+
+            setIsOwner(true)
+        }
+
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+const checkPresaleStarted = async() => {
+ 
+    try {        
+        const provider = await getProviderOrSigner()
+        const cryptoDevCon = new Contract(
+            CONTRACT_ADDRESS,
+            ABI,
+            provider
+        );
+        const isPresaleStarted = await cryptoDevCon.presaleStarted()
+        setPresaleStarted(isPresaleStarted);
+
+    } catch (err) {
+        console.log(err)
+    }
+
+}
+
+const checkPresaleEnded = async() => {
+  
+    try{
+        const provider = await getProviderOrSigner();
+        const cryptoDevCon = new Contract(
+            CONTRACT_ADDRESS,
+            ABI,
+            provider
+        )
+        const presaleEndedTime = await cryptoDevCon.presaleEnded()
+        const nowTimeInSec = Math.floor(Date.now() / 1000)
+        const presaleEnded = presaleEndedTime.lt(nowTimeInSec);
+        setIsPresaleEnded(presaleEnded)
+
+    } catch(err){
+        console.log(err)
+    }
+}
+
+const checkNumberMinted = async() => {
+    try {
+        const provider = await getProviderOrSigner()
+        const cryptoDevCon = new Contract(
+            CONTRACT_ADDRESS,
+            ABI,
+            provider
+        )
+        const tokenIds = await cryptoDevCon.tokenIds()
+        setNummberMinted(tokenIds.toNumber())
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+const startPresale = async () => {
+    try {
+        setLoading(true)
+        const signer = await getProviderOrSigner(true)
+        const cryptoDevCon = new Contract(
+            CONTRACT_ADDRESS,
+            ABI,
+            signer
+        )
+        const txn = await cryptoDevCon.startPresale()
+        await txn.wait()
+        setLoading(false)
+    }
+    catch(err) {
+
+    }
+}
+
+const presaleMint = async() => {
+    try {
+        setLoading(true)
+        const signer = await getProviderOrSigner(true)
+        const cryptoDevCon = new Contract(
+            CONTRACT_ADDRESS,
+            ABI,
+            signer
+        )
+        const txn = await cryptoDevCon.presaleMint({
+            value: ethers.utils.parseEther("0.01")
+        });
+        await txn.wait()
+        await checkNumberMinted()
+        setLoading(false)
+        alert("You have successfully minted crypto Devs NFT")
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+const mint = async() => {
+    try {
+        setLoading(true)
+        const signer = await getProviderOrSigner(true)
+        const cryptoDevCon = new Contract(
+            CONTRACT_ADDRESS,
+            ABI,
+            signer
+        )
+        const txn = await cryptoDevCon.mint({
+            value: ethers.utils.parseEther("0.01")
+        })
+        await txn.wait()
+        await checkNumberMinted()
+        setLoading(false)
+        alert("You have successfully minted crypto Devs NFT")
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+
+const loadingButton = () => {
+  return (
+        <Button 
+            variant="contained" 
+            sx={{
+                textTransform: 'none',
+            }}
+            color="primary" 
+            disabled
+        >
+            <CircularProgress 
+                color='primary'
+                size={20}
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    position: 'absolute'
+                }}    
+            />
+            loading please wait
+    </Button>
+  )
+}
+
 const renderButton = () => {
-    if(joinedWhitelist) {
+    if(!presaleStarted && isOwner) {
         return (
-            <p className={styles.description}>
-                Thank you for joining the whitelist!!
-            </p>
+               loading? loadingButton() : (<Button 
+                    variant="contained" 
+                    sx={{textTransform: 'none'}}
+                    color="primary"
+                    onClick={startPresale}
+                    >
+                        start presale
+                </Button>)
+        );
+    } else if(!presaleStarted && !isOwner) {
+        return (
+                <p className={styles.description}>
+                    Presale have not yet started
+                </p>
         );
     }
     else {
-        return (
-            loading?(
-                <Button 
-                    variant="contained" 
-                    sx={{
-                        textTransform: 'none',
-                    }}
-                    color="primary" 
-                    disabled
-                    >
-                        <CircularProgress 
-                            color='primary'
-                            size={20}
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                position: 'absolute'
-                            }}    
-                        />
-                        join the whitelist
-                </Button>
-            ):(    
-                <Button 
-                    variant="contained" 
-                    sx={{textTransform: 'none'}}
-                    onClick={addToWhitelist}
-                    color="primary">
-                        join the whitelist
-                </Button>
+        if(!isPresaleEnded) {
+           return ( 
+                    loading? loadingButton() : (<Button 
+                            variant="contained" 
+                            sx={{textTransform: 'none'}}
+                            color="primary"
+                            onClick={presaleMint}
+                                >
+                                presale mint
+                        </Button>)
+                    )
+        } else {
+            return ( 
+                loading? loadingButton() : (<Button 
+                        variant="contained" 
+                        sx={{textTransform: 'none'}}
+                        color="primary"
+                        onClick={mint}
+                            >
+                             mint
+                    </Button>)
                 )
-        );
+        }
+        
     }
     
+}
+
+const onPageLoad = async() => {
+    try {
+        await connectWallet();
+        await checkContractOwnership();
+        await checkPresaleStarted();
+        await checkPresaleEnded();
+        await checkNumberMinted();
+        
+    setInterval(async() => {
+        await checkPresaleEnded()
+    }, 5000)
+
+    } catch (err) {
+        console.log(err)
+    }
+
 }
 
 useEffect(() => {
@@ -179,24 +310,28 @@ useEffect(() => {
             providerOptions: {},
             disableInjectedProvider: false
         });
-        connectWallet();
         
     }
-}, [walletConnected])
+    onPageLoad();
+    
+})
 
   return (
     <div>
-        <SnackBar />
-        {needMetamsk && <CustomModal />}
-        <BackDropLoading open={openBackDrop} />
-        {joinedWhitelist && <ConfettiDrop width={winWidth} height={winHeight}/>}
         <Head>
             <title>Crypto Dev</title>
-            <meta name='description' content='Crypto Devs Nft whitelist page' />
+            <meta name='description' content='Mint your Crypto Devs NFT with Goerli ETH here' />
         </Head>
+        <SnackBar />
+
+        {needMetamsk && <CustomModal />}
+
+        <BackDropLoading open={openBackDrop} />
+
+        {/* {joinedWhitelist && <ConfettiDrop width={winWidth} height={winHeight}/>} */}
       { showErrorAccount && <Alert variant='filled' severity='error' sx={{
           display: 'flex',
-          justifyContent: 'center'
+          justifyContennpmt: 'center'
         }}>
             <b>Error!!</b> Change to Goerli Network
         </Alert>}
@@ -218,10 +353,10 @@ useEffect(() => {
                             Welcome to Crypto Devs!
                         </h3>
                         <p className={styles.description}>
-                            Its an NFT collection for developers in crypto.
+                            It's an NFT collection for developers in crypto.
                         </p>
                         <p className={styles.description}>
-                            {numberJoined} had already joined the whitelist
+                           {numberMinted}/20 NFT had already been minted
                         </p>
                         <div>
                             {renderButton()}
