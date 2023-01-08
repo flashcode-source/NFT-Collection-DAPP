@@ -1,4 +1,4 @@
-You can view the webpage via 
+You can view the webpage via https://nft-collection-dapp-psi.vercel.app/
 
 <h2>NFT Collection</h2>
 
