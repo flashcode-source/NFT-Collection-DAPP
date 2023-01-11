@@ -1,5 +1,5 @@
 // contract address
-export const CONTRACT_ADDRESS = "0x4a44115257c896332218FcA10e05e5589A35Ab9B";
+export const CONTRACT_ADDRESS = "0xCfF93dEf77A3bC76Cf6f309Df4e36CF0a66699d1";
 
 // abi
 export const ABI = [
